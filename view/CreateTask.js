@@ -23,6 +23,9 @@ export default {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authentication-Token': localStorage.getItem(
+              'Authentication-Token'
+            ),
           },
           body: JSON.stringify(this.formData),
         })

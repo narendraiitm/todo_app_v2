@@ -7,6 +7,7 @@ export default {
   <div>
     <Error v-if='error' />
     <ol v-else-if='tasks'>
+        <span @click='logout'> Log Out</span>
         <li v-for='(task, index) in tasks'>
             <span>{{task.title}}</span> <button @click='deleteTask(task.id, index)'> Delete Task</button> 
         </li>
@@ -21,9 +22,16 @@ export default {
     }
   },
   methods: {
+    logout() {
+      localStorage.removeItem('Authentication-Token')
+      this.$router.push({ path: '/login' })
+    },
     deleteTask(id, index) {
       CustomFetch(`http://localhost:5000/api/tasks/${id}`, {
         method: 'DELETE',
+        headers: {
+          'Authentication-Token': localStorage.getItem('Authentication-Token'),
+        },
       })
         .then(() => {
           this.tasks.splice(index, 1)
@@ -39,7 +47,12 @@ export default {
   },
 
   mounted() {
-    CustomFetch('http://localhost:5000/api/tasks')
+    CustomFetch('http://localhost:5000/api/tasks', {
+      method: 'GET',
+      headers: {
+        'Authentication-Token': localStorage.getItem('Authentication-Token'),
+      },
+    })
       .then((data) => {
         this.tasks = data
         console.log(data)
